@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+} 
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  CLIENTE
+  TECNICO
+  ADMIN
+}
+
+enum ServiceStatus {
+  PENDIENTE
+  ACEPTADA
+  EN_PROGRESO
+  COMPLETADA
+  RECHAZADA
+  CANCELADA
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  email     String   @unique
+  password  String
+  role      UserRole @default(CLIENTE)
+  createdAt DateTime @default(now())
+
+  solicitudesComoCliente ServiceRequest[] @relation("ClienteSolicitudes")
+  solicitudesComoTecnico ServiceRequest[] @relation("TecnicoSolicitudes")
+}
+
+model ServiceRequest {
+  id          Int           @id @default(autoincrement())
+  titulo      String
+  descripcion String
+  estado      ServiceStatus @default(PENDIENTE)
+
+  clienteId Int
+  tecnicoId Int?
+
+  cliente User  @relation("ClienteSolicitudes", fields: [clienteId], references: [id])
+  tecnico User? @relation("TecnicoSolicitudes", fields: [tecnicoId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
