@@ -8,8 +8,13 @@ const app = express();
 
 const PORT = process.env.PORT || 3001;
 
+const authRoutes = require("./src/routes/authRoutes");
+
 app.use(cors());
 app.use(express.json());
+
+// Ruta de autenticacion
+app.use("/api/auth", authRoutes);
 
 // Health check
 app.get("/health", (req, res) => {
@@ -19,7 +24,7 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Test de conexión con PostgreSQL
+// Test de conexion con Postgres
 app.get("/health/db", async (req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
